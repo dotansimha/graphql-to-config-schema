@@ -17,10 +17,10 @@ import {
 } from 'graphql';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 
-export async function generateFromSchema(
+export function generateFromSchema(
   schema: GraphQLSchema,
   rootType = 'Query'
-): Promise<JSONSchema7> {
+): JSONSchema7 {
   const documentNode = parse(printSchema(schema));
   const jsonSchema: JSONSchema7 = {
     definitions: {},
