@@ -42,7 +42,7 @@ async function main() {
   writeFileSync(schemaFilePath, JSON.stringify(jsonSchema, null, 2));
 
   if (typings) {
-    const tsTypes = compile(jsonSchema as any, 'Config');
+    const tsTypes = await compile(jsonSchema as any, 'Config');
     const tsFilePath = resolve(process.cwd(), `./${typings}`);
     writeFileSync(tsFilePath, tsTypes);
   }
