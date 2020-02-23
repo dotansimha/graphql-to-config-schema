@@ -32,26 +32,28 @@ export function generateFromSchema(
   visit(documentNode, {
     ObjectTypeDefinition(node) {
       if (node.name.value === rootType) {
-        (jsonSchema.required = node.fields
+        (jsonSchema.required = (node.fields || [])
           .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
           .map(f => f.name.value)),
           (jsonSchema.properties = buildPropertiesFromFields(
             schema,
-            node.fields
+            node.fields || []
           ));
         return;
       }
 
-      jsonSchema.definitions[node.name.value] = {
-        additionalItems: false,
-        additionalProperties: false,
-        type: 'object',
-        title: node.name.value,
-        required: node.fields
-          .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
-          .map(f => f.name.value),
-        properties: buildPropertiesFromFields(schema, node.fields)
-      };
+      if (jsonSchema.definitions) {
+        jsonSchema.definitions[node.name.value] = {
+          additionalItems: false,
+          additionalProperties: false,
+          type: 'object',
+          title: node.name.value,
+          required: (node.fields || [])
+            .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
+            .map(f => f.name.value),
+          properties: buildPropertiesFromFields(schema, node.fields || [])
+        };
+      }
     }
   });
 
@@ -100,7 +102,7 @@ function isArray(typeNode: TypeNode): boolean {
   return false;
 }
 
-const SCALARS = {
+const SCALARS: Record<string, string> = {
   String: 'string',
   ID: 'string', // Should be ["string", "number"] ?
   Boolean: 'boolean',
@@ -117,7 +119,7 @@ function getTypeToUse(
 
   if (isScalarType(schemaType) && SCALARS[schemaType.name]) {
     return {
-      type: SCALARS[schemaType.name]
+      type: SCALARS[schemaType.name] as any
     };
   } else if (isEnumType(schemaType)) {
     return {
