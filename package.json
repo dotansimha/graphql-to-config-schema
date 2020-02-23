@@ -1,0 +1,40 @@
+{
+  "name": "graphql-to-config-schema",
+  "repository": "git@github.com:dotansimha/graphql-to-config-schema.git",
+  "author": "Dotan Simha <dotansimha@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "bin": {
+    "graphql-to-config-schema": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "peerDependencies": {
+    "graphql": "*"
+  },
+  "devDependencies": {
+    "@types/json-schema": "7.0.4",
+    "@types/yargs": "15.0.3",
+    "graphql": "14.6.0",
+    "@types/node": "13.7.4",
+    "typescript": "3.8.2",
+    "jest": "25.1.0",
+    "ts-jest": "25.2.1",
+    "@types/jest": "25.1.3"
+  },
+  "dependencies": {
+    "yargs": "15.1.0",
+    "@graphql-toolkit/core": "0.9.7",
+    "@graphql-toolkit/url-loader": "0.9.7",
+    "@graphql-toolkit/json-file-loader": "0.9.7",
+    "@graphql-toolkit/graphql-file-loader": "0.9.7",
+    "@graphql-toolkit/schema-merging": "0.9.7"
+  }
+}
