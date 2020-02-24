@@ -74,7 +74,11 @@ function buildPropertiesFromFields(
       : typeToUse) as JSONSchema4;
 
     if (field.description?.value) {
-      fieldDef.description = field.description.value;
+      if (fieldDef.description) {
+        fieldDef.description = `${field.description.value} (${fieldDef.description})`;
+      } else {
+        fieldDef.description = field.description.value;
+      }
     }
 
     if (!isArray) {
@@ -126,27 +130,35 @@ function getTypeToUse(schema: GraphQLSchema, typeName: string): JSONSchema4 {
       type: SCALARS[schemaType.name] as any
     };
   } else if (isEnumType(schemaType)) {
+    const values = schemaType.getValues().map(v => v.value);
+
     return {
       type: 'string',
-      enum: schemaType.getValues().map(v => v.value)
+      enum: values,
+      description: `Allowed values: ${values.join(', ')}`
     };
   } else if (isObjectType(schemaType)) {
     return {
       $ref: `#/definitions/${schemaType.name}`
     };
   } else if (isInterfaceType(schemaType)) {
+    const types = getImplementingTypes(schema, schemaType);
+
     return {
-      anyOf: getImplementingTypes(schema, schemaType).map(t =>
-        getTypeToUse(schema, t)
-      )
+      description: `Any of: ${types.join(', ')}`,
+      anyOf: types.map(t => getTypeToUse(schema, t))
     };
   } else if (isUnionType(schemaType)) {
+    const types = schemaType.getTypes();
+
     return {
-      anyOf: schemaType.getTypes().map(t => getTypeToUse(schema, t.name))
+      description: `Any of: ${types.join(', ')}`,
+      anyOf: types.map(t => getTypeToUse(schema, t.name))
     };
   }
 
   return {
+    description: `Unknown object`,
     type: 'object'
   };
 }

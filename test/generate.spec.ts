@@ -180,7 +180,8 @@ describe('generate', () => {
             anyOf: [
               { $ref: '#/definitions/Prefix' },
               { $ref: '#/definitions/Link' }
-            ]
+            ],
+            description: 'Any of: Prefix, Link'
           }
         },
         required: ['t']
@@ -231,7 +232,8 @@ describe('generate', () => {
               {
                 $ref: '#/definitions/Complex'
               }
-            ]
+            ],
+            description: 'Any of: String, Int, Complex'
           }
         }
       })
