@@ -73,16 +73,18 @@ function buildPropertiesFromFields(
       ? { type: 'array', items: typeToUse, additionalItems: false }
       : typeToUse) as JSONSchema4;
 
+    if (!isArray) {
+      fieldDef.additionalProperties = false;
+    } else {
+      fieldDef.description = typeToUse.description;
+    }
+
     if (field.description?.value) {
       if (fieldDef.description) {
         fieldDef.description = `${field.description.value} (${fieldDef.description})`;
       } else {
         fieldDef.description = field.description.value;
       }
-    }
-
-    if (!isArray) {
-      fieldDef.additionalProperties = false;
     }
 
     return {
