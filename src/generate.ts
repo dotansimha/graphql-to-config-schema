@@ -63,14 +63,18 @@ export function generateFromSchema(
 function buildPropertiesFromFields(
   schema: GraphQLSchema,
   fields: ReadonlyArray<FieldDefinitionNode>
-): Record<string, JSONSchema7Definition> {
+): Record<string, JSONSchema7> {
   return fields.reduce((prev, field) => {
     const namedType = getBaseTypeNode(field.type);
     const typeToUse = getTypeToUse(schema, namedType.name.value);
     const isArrayField = isArray(field.type);
-    const fieldDef = isArrayField
+    const fieldDef: JSONSchema7 = (isArrayField
       ? { type: 'array', items: typeToUse }
-      : typeToUse;
+      : typeToUse) as JSONSchema7;
+
+      if (field.description?.value) {
+        fieldDef.description = field.description.value;
+      }
 
     return {
       ...prev,
@@ -114,7 +118,7 @@ const SCALARS: Record<string, string> = {
 function getTypeToUse(
   schema: GraphQLSchema,
   typeName: string
-): JSONSchema7Definition {
+): JSONSchema7 {
   const schemaType = schema.getType(typeName);
 
   if (isScalarType(schemaType) && SCALARS[schemaType.name]) {
