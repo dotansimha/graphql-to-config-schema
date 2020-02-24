@@ -14,9 +14,8 @@ describe('generate', () => {
     expect(out).toEqual(
       expect.objectContaining({
         definitions: {},
+        additionalProperties: false,
         properties: {
-          additionalItems: false,
-          additionalProperties: false,
           field: { type: 'string' },
           requiredField: { type: 'string' }
         },
@@ -46,15 +45,11 @@ describe('generate', () => {
 
     expect(out).toEqual(
       expect.objectContaining({
+        additionalProperties: false,
         definitions: {
           MyType: {
-            additionalItems: false,
             additionalProperties: false,
-            properties: {
-              additionalItems: false,
-              additionalProperties: false,
-              id: { type: 'string' }
-            },
+            properties: { id: { type: 'string' } },
             required: ['id'],
             title: 'MyType',
             type: 'object'
@@ -62,17 +57,37 @@ describe('generate', () => {
         },
         properties: {
           a1: { type: 'string' },
-          a2: { items: { type: 'string' }, type: 'array' },
-          a3: { items: { type: 'string' }, type: 'array' },
-          a4: { items: { type: 'string' }, type: 'array' },
+          a2: {
+            additionalItems: false,
+            items: { type: 'string' },
+            type: 'array'
+          },
+          a3: {
+            additionalItems: false,
+            items: { type: 'string' },
+            type: 'array'
+          },
+          a4: {
+            additionalItems: false,
+            items: { type: 'string' },
+            type: 'array'
+          },
           a5: { $ref: '#/definitions/MyType' },
           a6: { $ref: '#/definitions/MyType' },
-          a7: { items: { $ref: '#/definitions/MyType' }, type: 'array' },
-          a8: { items: { $ref: '#/definitions/MyType' }, type: 'array' },
-          additionalItems: false,
-          additionalProperties: false
+          a7: {
+            additionalItems: false,
+            items: { $ref: '#/definitions/MyType' },
+            type: 'array'
+          },
+          a8: {
+            additionalItems: false,
+            items: { $ref: '#/definitions/MyType' },
+            type: 'array'
+          }
         },
-        required: ['a3', 'a4', 'a6', 'a8']
+        required: ['a3', 'a4', 'a6', 'a8'],
+        title: 'Config',
+        type: 'object'
       })
     );
   });
@@ -91,13 +106,11 @@ describe('generate', () => {
 
     expect(out).toEqual(
       expect.objectContaining({
+        additionalProperties: false,
         definitions: {
           MyType: {
-            additionalItems: false,
             additionalProperties: false,
             properties: {
-              additionalItems: false,
-              additionalProperties: false,
               id: { type: 'string' }
             },
             required: [],
@@ -106,8 +119,6 @@ describe('generate', () => {
           }
         },
         properties: {
-          additionalItems: false,
-          additionalProperties: false,
           field: { $ref: '#/definitions/MyType' }
         },
         required: ['field']
@@ -140,13 +151,11 @@ describe('generate', () => {
 
     expect(out).toEqual(
       expect.objectContaining({
+        additionalProperties: false,
         definitions: {
           Link: {
-            additionalItems: false,
             additionalProperties: false,
             properties: {
-              additionalItems: false,
-              additionalProperties: false,
               from: { type: 'string' },
               to: { type: 'string' },
               type: { type: 'string' }
@@ -156,11 +165,8 @@ describe('generate', () => {
             type: 'object'
           },
           Prefix: {
-            additionalItems: false,
             additionalProperties: false,
             properties: {
-              additionalItems: false,
-              additionalProperties: false,
               prefix: { type: 'string' },
               type: { type: 'string' }
             },
@@ -170,8 +176,6 @@ describe('generate', () => {
           }
         },
         properties: {
-          additionalItems: false,
-          additionalProperties: false,
           t: {
             anyOf: [
               { $ref: '#/definitions/Prefix' },
@@ -200,16 +204,14 @@ describe('generate', () => {
 
     expect(out).toEqual(
       expect.objectContaining({
+        additionalProperties: false,
         definitions: {
           Complex: {
-            additionalItems: false,
             additionalProperties: false,
             type: 'object',
             title: 'Complex',
             required: ['id'],
             properties: {
-              additionalItems: false,
-              additionalProperties: false,
               id: {
                 type: 'string'
               }
@@ -218,8 +220,6 @@ describe('generate', () => {
         },
         required: ['test'],
         properties: {
-          additionalItems: false,
-          additionalProperties: false,
           test: {
             anyOf: [
               {

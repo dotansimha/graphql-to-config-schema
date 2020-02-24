@@ -15,36 +15,37 @@ import {
   GraphQLObjectType,
   isUnionType
 } from 'graphql';
-import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 
 export function generateFromSchema(
   schema: GraphQLSchema,
   rootType = 'Query'
-): JSONSchema7 {
+): JSONSchema4 {
   const documentNode = parse(printSchema(schema));
-  const jsonSchema: JSONSchema7 = {
+  const jsonSchema: JSONSchema4 = {
     definitions: {},
     title: 'Config',
     type: 'object',
-    $schema: 'http://json-schema.org/draft-07/schema#'
+    $schema: 'http://json-schema.org/draft-04/schema#'
   };
 
   visit(documentNode, {
     ObjectTypeDefinition(node) {
       if (node.name.value === rootType) {
-        (jsonSchema.required = (node.fields || [])
+        jsonSchema.required = (node.fields || [])
           .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
-          .map(f => f.name.value)),
-          (jsonSchema.properties = buildPropertiesFromFields(
-            schema,
-            node.fields || []
-          ));
+          .map(f => f.name.value);
+        jsonSchema.properties = buildPropertiesFromFields(
+          schema,
+          node.fields || []
+        );
+        jsonSchema.additionalProperties = false;
+
         return;
       }
 
       if (jsonSchema.definitions) {
         jsonSchema.definitions[node.name.value] = {
-          additionalItems: false,
           additionalProperties: false,
           type: 'object',
           title: node.name.value,
@@ -63,23 +64,25 @@ export function generateFromSchema(
 function buildPropertiesFromFields(
   schema: GraphQLSchema,
   fields: ReadonlyArray<FieldDefinitionNode>
-): Record<string, JSONSchema7> {
+): Record<string, JSONSchema4> {
   return fields.reduce((prev, field) => {
     const namedType = getBaseTypeNode(field.type);
     const typeToUse = getTypeToUse(schema, namedType.name.value);
     const isArrayField = isArray(field.type);
-    const fieldDef: JSONSchema7 = (isArrayField
-      ? { type: 'array', items: typeToUse }
-      : typeToUse) as JSONSchema7;
+    const fieldDef: JSONSchema4 = (isArrayField
+      ? { type: 'array', items: typeToUse, additionalItems: false }
+      : typeToUse) as JSONSchema4;
 
-      if (field.description?.value) {
-        fieldDef.description = field.description.value;
-      }
+    if (field.description?.value) {
+      fieldDef.description = field.description.value;
+    }
+
+    if (!isArray) {
+      fieldDef.additionalProperties = false;
+    }
 
     return {
       ...prev,
-      additionalItems: false,
-      additionalProperties: false,
       [field.name.value]: fieldDef
     };
   }, {});
@@ -115,10 +118,7 @@ const SCALARS: Record<string, string> = {
   JSON: 'object'
 };
 
-function getTypeToUse(
-  schema: GraphQLSchema,
-  typeName: string
-): JSONSchema7 {
+function getTypeToUse(schema: GraphQLSchema, typeName: string): JSONSchema4 {
   const schemaType = schema.getType(typeName);
 
   if (isScalarType(schemaType) && SCALARS[schemaType.name]) {
