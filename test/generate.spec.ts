@@ -113,7 +113,6 @@ describe('generate', () => {
             properties: {
               id: { type: 'string' }
             },
-            required: [],
             title: 'MyType',
             type: 'object'
           }

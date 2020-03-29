@@ -32,9 +32,14 @@ export function generateFromSchema(
   visit(documentNode, {
     ObjectTypeDefinition(node) {
       if (node.name.value === rootType) {
-        jsonSchema.required = (node.fields || [])
+        const required = (node.fields || [])
           .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
           .map(f => f.name.value);
+
+        if (required.length) {
+          jsonSchema.required = required;
+        }
+
         jsonSchema.properties = buildPropertiesFromFields(
           schema,
           node.fields || []
@@ -45,14 +50,22 @@ export function generateFromSchema(
       }
 
       if (jsonSchema.definitions) {
+        const additional: JSONSchema4 = {};
+
+        const required = (node.fields || [])
+          .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
+          .map(f => f.name.value);
+
+        if (required.length) {
+          additional.required = required;
+        }
+
         jsonSchema.definitions[node.name.value] = {
           additionalProperties: false,
           type: 'object',
           title: node.name.value,
-          required: (node.fields || [])
-            .filter(f => f.type.kind === Kind.NON_NULL_TYPE)
-            .map(f => f.name.value),
-          properties: buildPropertiesFromFields(schema, node.fields || [])
+          properties: buildPropertiesFromFields(schema, node.fields || []),
+          ...additional
         };
       }
     }
@@ -117,7 +130,7 @@ function isArray(typeNode: TypeNode): boolean {
 
 const SCALARS: Record<string, string> = {
   String: 'string',
-  ID: 'string', // Should be ["string", "number"] ?
+  ID: 'string',
   Boolean: 'boolean',
   Float: 'number',
   Int: 'integer',
@@ -128,8 +141,17 @@ function getTypeToUse(schema: GraphQLSchema, typeName: string): JSONSchema4 {
   const schemaType = schema.getType(typeName);
 
   if (isScalarType(schemaType) && SCALARS[schemaType.name]) {
+    const scalar = SCALARS[schemaType.name] as any;
+
+    if (scalar === 'object') {
+      return {
+        type: scalar,
+        properties: {},
+      }
+    };
+
     return {
-      type: SCALARS[schemaType.name] as any
+      type: scalar,
     };
   } else if (isEnumType(schemaType)) {
     const values = schemaType.getValues().map(v => v.value);
@@ -161,7 +183,8 @@ function getTypeToUse(schema: GraphQLSchema, typeName: string): JSONSchema4 {
 
   return {
     description: `Unknown object`,
-    type: 'object'
+    type: 'object',
+    properties: {},
   };
 }
 
