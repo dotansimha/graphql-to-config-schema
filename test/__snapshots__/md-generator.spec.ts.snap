@@ -7,17 +7,17 @@ exports[`MD Generator Should generate md correctly 1`] = `
 * \`f1\` (type: \`String\`) - this
 is
 multi
-* \`f2\` (type: \`Array<String>\`)
-* \`f3\` (type: \`Array<String>\`, required)
-* \`f4\` (type: \`Array<String>\`, required)
-* \`f5\` (type: \`object\`): 
+* \`f2\` (type: \`Array of String\`)
+* \`f3\` (type: \`Array of String\`, required)
+* \`f4\` (type: \`Array of String\`, required)
+* \`f5\` (type: \`Object\`): 
   * \`t\` (type: \`String\`)
   * \`i\` (type: \`Int\`, required)
-  * \`nest\` (type: \`object\`, required) - test: 
+  * \`nest\` (type: \`Object\`, required) - test: 
     * \`t\` (type: \`String\`)
   * \`other\` (type: \`String\`, required)
 * \`f6\` (type: \`String (A | B | C)\`)
-* \`u\` - one of: 
+* \`u\` -  One of: 
   * \`Boolean\`
   * \`object\`: 
     * \`boop\` (type: \`String\`)"

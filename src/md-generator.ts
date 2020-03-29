@@ -8,7 +8,9 @@ import {
   isEnumType,
   getNamedType,
   isUnionType,
-  isScalarType
+  isScalarType,
+  isWrappingType,
+  isNullableType
 } from 'graphql';
 
 export type FileOutput = { file: string; content: string };
@@ -39,10 +41,7 @@ export function transformTypeToMdFormat(
   type: GraphQLOutputType,
   level = 0
 ): string {
-  if (isListType(type)) {
-    return `Array<${transformTypeToMdFormat(type.ofType, level)}>`;
-  }
-  if (isNonNullType(type)) {
+  if (isWrappingType(type)) {
     return transformTypeToMdFormat(type.ofType, level);
   }
 
@@ -56,11 +55,14 @@ export function transformTypeToMdFormat(
       const isRequired =
         isNonNullType(field.type) ||
         (isListType(field.type) && isNonNullType(field.type.ofType));
+      const isList =
+      isListType(field.type) ||
+        (isNonNullType(field.type) && isListType(field.type.ofType));
       const typeToUse = transformTypeToMdFormat(field.type, level + 1);
 
       if (hasChildObject) {
         fields.push(
-          `${baseField} (type: \`object\`${isRequired ? ', required' : ''})${
+          `${baseField} (type: \`${isList ? 'Array of Object' : 'Object'}\`${isRequired ? ', required' : ''})${
             field.description ? ' - ' + field.description : ''
           }: ${typeToUse}`
         );
@@ -68,11 +70,11 @@ export function transformTypeToMdFormat(
         fields.push(
           `${baseField} - ${
             field.description ? ' - ' + field.description : ''
-          }${isRequired ? ' (required)' : ''}one of: ${typeToUse}`
+          }${isRequired ? ' (required)' : ''}${isList ? ' Array' : ' One'} of: ${typeToUse}`
         );
       } else {
         fields.push(
-          `${baseField} (type: \`${typeToUse}\`${
+          `${baseField} (type: \`${isList ? 'Array of ' : ''}${typeToUse}\`${
             isRequired ? ', required' : ''
           })${field.description ? ' - ' + field.description : ''}`
         );
