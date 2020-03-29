@@ -10,6 +10,7 @@ import { writeFileSync } from 'fs';
 import { resolve, join } from 'path';
 import { compile } from 'json-schema-to-typescript';
 import { DIRECTIVES } from './directives';
+import { sync as mkdirpSync } from 'mkdirp';
 import { generatedMarkdown } from './md-generator';
 
 async function main() {
@@ -59,6 +60,7 @@ async function main() {
   if (markdown) {
     const mdFiles = await generatedMarkdown(unifiedSchemea);
     const mdDir = resolve(process.cwd(), `./${markdown}`);
+    mkdirpSync(mdDir);
 
     for (const result of mdFiles) {
       const filePath = join(mdDir, result.file);
