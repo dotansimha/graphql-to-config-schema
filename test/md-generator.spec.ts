@@ -24,6 +24,13 @@ describe('MD Generator', () => {
       f4: [String!]!
       f5: SubType
       f6: Test
+      u: MyUnion
+    }
+
+    union MyUnion = Boolean | OtherType
+
+    type OtherType {
+      boop: String
     }
 
     type SubType {
@@ -48,6 +55,7 @@ describe('MD Generator', () => {
     `);
 
     const mdOutput = generatedMarkdown(schema);
+    console.log(mdOutput[0].content);
     expect(mdOutput.length).toBe(1);
     expect(mdOutput[0].content).toMatchSnapshot();
   });

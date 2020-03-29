@@ -16,5 +16,9 @@ multi
   * \`nest\` (type: \`object\`, required) - test: 
     * \`t\` (type: \`String\`)
   * \`other\` (type: \`String\`, required)
-* \`f6\` (type: \`String (A | B | C)\`)"
+* \`f6\` (type: \`String (A | B | C)\`)
+* \`u\` - one of: 
+  * \`Boolean\`
+  * \`object\`: 
+    * \`boop\` (type: \`String\`)"
 `;

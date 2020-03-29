@@ -6,7 +6,9 @@ import {
   isObjectType,
   isInterfaceType,
   isEnumType,
-  getNamedType
+  getNamedType,
+  isUnionType,
+  isScalarType
 } from 'graphql';
 
 export type FileOutput = { file: string; content: string };
@@ -23,7 +25,9 @@ export function generatedMarkdown(schema: GraphQLSchema): FileOutput[] {
     ) {
       result.push({
         file: `${typeName}.generated.md`,
-        content: `${type.description ? type.description + '\n\n' : ''}${transformTypeToMdFormat(type)}`
+        content: `${
+          type.description ? type.description + '\n\n' : ''
+        }${transformTypeToMdFormat(type)}`
       });
     }
   }
@@ -48,6 +52,7 @@ export function transformTypeToMdFormat(
     for (const [fieldName, field] of Object.entries(type.getFields())) {
       const baseField = `${indent(level)}* \`${fieldName}\``;
       const hasChildObject = isObjectType(getNamedType(field.type));
+      const hasMultipleTypes = isUnionType(getNamedType(field.type));
       const isRequired =
         isNonNullType(field.type) ||
         (isListType(field.type) && isNonNullType(field.type.ofType));
@@ -55,9 +60,15 @@ export function transformTypeToMdFormat(
 
       if (hasChildObject) {
         fields.push(
-          `${baseField} (type: \`object\`${
-            isRequired ? ', required' : ''
-          })${field.description ? ' - ' + field.description : ''}: ${typeToUse}`
+          `${baseField} (type: \`object\`${isRequired ? ', required' : ''})${
+            field.description ? ' - ' + field.description : ''
+          }: ${typeToUse}`
+        );
+      } else if (hasMultipleTypes) {
+        fields.push(
+          `${baseField} - ${
+            field.description ? ' - ' + field.description : ''
+          }${isRequired ? ' (required)' : ''}one of: ${typeToUse}`
         );
       } else {
         fields.push(
@@ -74,6 +85,16 @@ export function transformTypeToMdFormat(
       .getValues()
       .map(v => v.name)
       .join(' | ')})`;
+  } else if (isUnionType(type)) {
+    return '\n' + type.getTypes().map(t => {
+      const content = transformTypeToMdFormat(t, level + 1);
+
+      if (isObjectType(t)) {
+        return `${indent(level)}* \`object\`: ${content}`
+      } else {
+        return `${indent(level)}* \`${content}\``;
+      }
+    }).join('\n');
   } else {
     return type.toString();
   }

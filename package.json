@@ -3,7 +3,7 @@
   "repository": "git@github.com:dotansimha/graphql-to-config-schema.git",
   "author": "Dotan Simha <dotansimha@gmail.com>",
   "license": "MIT",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "scripts": {
     "build": "tsc",
     "test": "jest"
