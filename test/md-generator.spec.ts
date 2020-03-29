@@ -11,7 +11,13 @@ describe('MD Generator', () => {
       m: MyType
     }
 
+    """ test desc """
     type MyType @md {
+      """
+      this
+      is
+      multi
+      """
       f1: String
       f2: [String]
       f3: [String]!
@@ -23,6 +29,9 @@ describe('MD Generator', () => {
     type SubType {
       t: String
       i: Int!
+      """
+      test
+      """
       nest: Sub2Type!
       other: String!
     }

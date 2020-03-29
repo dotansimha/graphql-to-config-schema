@@ -23,7 +23,7 @@ export function generatedMarkdown(schema: GraphQLSchema): FileOutput[] {
     ) {
       result.push({
         file: `${typeName}.generated.md`,
-        content: transformTypeToMdFormat(type)
+        content: `${type.description ? type.description + '\n\n' : ''}${transformTypeToMdFormat(type)}`
       });
     }
   }
@@ -57,13 +57,13 @@ export function transformTypeToMdFormat(
         fields.push(
           `${baseField} (type: \`object\`${
             isRequired ? ', required' : ''
-          }): ${typeToUse}`
+          })${field.description ? ' - ' + field.description : ''}: ${typeToUse}`
         );
       } else {
         fields.push(
           `${baseField} (type: \`${typeToUse}\`${
             isRequired ? ', required' : ''
-          })`
+          })${field.description ? ' - ' + field.description : ''}`
         );
       }
     }

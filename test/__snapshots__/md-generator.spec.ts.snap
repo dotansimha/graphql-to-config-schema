@@ -1,15 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MD Generator Should generate md correctly 1`] = `
-"
-* \`f1\` (type: \`String\`)
+" test desc 
+
+
+* \`f1\` (type: \`String\`) - this
+is
+multi
 * \`f2\` (type: \`Array<String>\`)
 * \`f3\` (type: \`Array<String>\`, required)
 * \`f4\` (type: \`Array<String>\`, required)
 * \`f5\` (type: \`object\`): 
   * \`t\` (type: \`String\`)
   * \`i\` (type: \`Int\`, required)
-  * \`nest\` (type: \`object\`, required): 
+  * \`nest\` (type: \`object\`, required) - test: 
     * \`t\` (type: \`String\`)
   * \`other\` (type: \`String\`, required)
 * \`f6\` (type: \`String (A | B | C)\`)"
