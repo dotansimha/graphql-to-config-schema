@@ -8,9 +8,7 @@ import {
   isEnumType,
   getNamedType,
   isUnionType,
-  isScalarType,
-  isWrappingType,
-  isNullableType
+  isWrappingType
 } from 'graphql';
 
 export type FileOutput = { file: string; content: string };
