@@ -21,6 +21,7 @@
     "graphql": "*"
   },
   "devDependencies": {
+    "@types/fs-extra": "9.0.1",
     "@types/mkdirp": "1.0.0",
     "@types/json-schema": "7.0.4",
     "@types/yargs": "15.0.4",
@@ -32,13 +33,15 @@
     "@types/jest": "25.1.4"
   },
   "dependencies": {
+    "fs-extra": "9.0.1",
     "mkdirp": "1.0.3",
     "json-schema-to-typescript": "8.2.0",
     "yargs": "15.3.1",
-    "@graphql-toolkit/core": "0.9.12",
-    "@graphql-toolkit/url-loader": "0.9.12",
-    "@graphql-toolkit/json-file-loader": "0.9.12",
-    "@graphql-toolkit/graphql-file-loader": "0.9.12",
-    "@graphql-toolkit/schema-merging": "0.9.12"
+    "@graphql-tools/load": "6.1.0",
+    "@graphql-tools/url-loader": "6.1.0",
+    "@graphql-tools/json-file-loader": "6.1.0",
+    "@graphql-tools/graphql-file-loader": "6.1.0",
+    "@graphql-tools/merge": "6.1.0",
+    "@graphql-tools/utils": "6.1.0"
   }
 }

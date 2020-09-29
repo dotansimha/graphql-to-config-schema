@@ -1,6 +1,5 @@
 import {
   GraphQLSchema,
-  printSchema,
   parse,
   visit,
   FieldDefinitionNode,
@@ -16,12 +15,13 @@ import {
   isUnionType
 } from 'graphql';
 import { JSONSchema4 } from 'json-schema';
+import { printSchemaWithDirectives } from '@graphql-tools/utils';
 
 export function generateFromSchema(
   schema: GraphQLSchema,
   rootType = 'Query'
 ): JSONSchema4 {
-  const documentNode = parse(printSchema(schema));
+  const documentNode = parse(printSchemaWithDirectives(schema));
   const jsonSchema: JSONSchema4 = {
     definitions: {},
     title: 'Config',
@@ -61,7 +61,7 @@ export function generateFromSchema(
         }
 
         jsonSchema.definitions[node.name.value] = {
-          additionalProperties: false,
+          additionalProperties: node.directives?.some(directiveNode => directiveNode.name.value === 'withAdditionalProperties'),
           type: 'object',
           title: node.name.value,
           properties: buildPropertiesFromFields(schema, node.fields || []),

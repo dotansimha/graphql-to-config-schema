@@ -1,5 +1,6 @@
 import { buildSchema } from 'graphql';
 import { generateFromSchema } from '../src/generate';
+import { DIRECTIVES } from '../src/directives';
 
 describe('generate', () => {
   it('simple primitive types, also with mandatory', async () => {
@@ -238,4 +239,35 @@ describe('generate', () => {
       })
     );
   });
+  it('allow additional properties if withAdditionalProperties directive is added', async () => {
+
+    const schema = buildSchema(/* GraphQL */ `
+      ${DIRECTIVES}
+      type Query {
+        handler: Handler
+      }
+
+      type Handler @withAdditionalProperties {
+        graphql: GraphQLHandlerConfig
+      }
+
+      type GraphQLHandlerConfig {
+        source: String!
+      }
+    `);
+    const out = await generateFromSchema(schema);
+
+    expect(out?.definitions).toEqual(
+      expect.objectContaining({
+        Handler: {
+          additionalProperties: true,
+          properties: {
+            graphql: { $ref: '#/definitions/GraphQLHandlerConfig' }
+          },
+          title: 'Handler',
+          type: 'object'
+        }
+      })
+    )
+  })
 });
